@@ -1,0 +1,59 @@
+<html ng-app="movie-browser">
+<head>
+    <!-- I opted to use public CDNs for serving up CSS and JS libraries for this project.
+    For a production environment I would likely use build tools that allow me to append specific versions. -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script type="text/javascript" src="movie-browser.js"></script>
+</head>
+<!-- Movie DB Content -->
+<body ng-controller="DataController as dataCtrl">
+    <div id="movie-container" class="container-fluid">
+        <div class="row">
+            <div id="movie-list" class="col-sm-12 col-md-4 movie-column">
+                <h1>Browse Movies</h1>
+                <ul>
+                    <li ng-repeat="movie in dataCtrl.collection.parts" ng-click="dataCtrl.setCurrentMovie($index)" ng-class="{ selected: dataCtrl.isCurrentMovie($index) }">
+                        <span class="movie-thumb" back-img="{{ dataCtrl.imageUrl(movie.poster_path, 'w154') }}"></span>
+                        <h2 title="{{ movie.title }}">{{ movie.title }}</h2>
+                        <p>{{ movie | movieDirectorName }}</p>
+                    </li>
+                </ul>
+            </div>
+            <div id="movie-stage" class="col-sm-12 col-md-8 movie-column" ng-show="dataCtrl.collection.parts.length">
+                <div class="movie-scene" ng-repeat="movie in dataCtrl.collection.parts" ng-show="dataCtrl.isCurrentMovie($index)">
+                    <h1>{{ movie.title }}</h1>
+                    <div class="movie-details">
+                        <img ng-src="{{ dataCtrl.imageUrl(movie.poster_path, 'w185') }}"/>
+                        <div>
+                            <p>
+                                <strong>Director:</strong> {{ movie | movieDirectorName }}<br/>
+                                <strong>Writers:</strong> {{ movie | movieWriterNames }}<br/>
+                                <strong>Stars:</strong> {{ movie | movieStarNames }}
+                            </p>
+                            <h2>What's it about?</h2>
+                            <p>{{ movie.overview }}</p>
+                        </div>
+                    </div>
+                    <h1>Movie Credits</h1>
+                    <ul class="movie-credits">
+                        <li ng-repeat="star in movie.credits.cast" ng-click="dataCtrl.setCurrentCast($index)" ng-class="{ selected: dataCtrl.isCurrentCast($index) }" ng-show="star.profile_path.length">
+                            <span class="credit-thumb" back-img="{{ dataCtrl.imageUrl(star.profile_path, 'w185') }}"></span>
+                            <div>
+                                <h2>{{ star.name }}</h2>
+                                <p>{{ star.character }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="movie-highlight">
+                        <li ng-repeat="star in movie.credits.cast" ng-show="dataCtrl.isCurrentCast($index)">
+                            <img ng-src="{{ dataCtrl.imageUrl(star.profile_path, 'h632') }}" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
