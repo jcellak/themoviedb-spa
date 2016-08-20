@@ -1,5 +1,7 @@
 // Wrapped in enclosure (separates from globals and overall good habit)
 (function() {
+    // Hard coded values for the purposes of rapid development.
+    // In a production environment, these should sit in separate configuration files for production/staging/development servers.
     var app = angular.module('movie-browser', []),
         api_key = '7ab870538b64f3fc26658d523e402ddd',
         collection_id = '528',
@@ -9,6 +11,7 @@
         api_collection_url = api_moviedb_url + 'collection/' + collection_id + '?api_key=' + api_key,
         api_movie_url = api_moviedb_url + 'movie/[id]?api_key=' + api_key + '&append_to_response=credits';
 
+    // Main controller for the app. Requests configuration values and collection data from the TMDb API, and handles selection.
     app.controller('DataController', ['$http', '$log', function($http, $log) {
         var dataCtrl = this; // to avoid referencing $http as this during callbacks
         this.config = {};
@@ -51,6 +54,7 @@
         }
 
         /**
+         * Set the currently selected movie.
          * @param currentMovie Array index of the currently selected cast movie.
          */
         this.setCurrentMovie = function(currentMovie) {
@@ -59,6 +63,7 @@
         };
 
         /**
+         * Whether or not the given index is attributed to the selected movie.
          * @param index
          * @returns {boolean}
          */
@@ -67,6 +72,7 @@
         };
 
         /**
+         * Set the currently selected cast member.
          * @param currentCast Array index of the currently selected cast member.
          */
         this.setCurrentCast = function(currentCast) {
@@ -74,6 +80,7 @@
         };
 
         /**
+         * Whether or not the given index is attributed to the selected cast member.
          * @param index
          * @returns {boolean}
          */
@@ -82,8 +89,9 @@
         };
 
         /**
-         * @param path
-         * @param imageSize
+         * Assembles a valid URL for an image.
+         * @param path An image path in the format '/abcde12345.png'
+         * @param imageSize An image size in the format 'w154', 'original', etc.
          * @returns {string}
          */
         this.imageUrl = function(path, imageSize) {
@@ -91,6 +99,9 @@
         };
     }]);
 
+    /**
+     * Filters a movie to the name of the Director.
+     */
     app.filter('movieDirectorName', function() {
         return function(movie) {
             if (!movie.credits) { // two-way data binding not set yet
@@ -105,6 +116,9 @@
         };
     });
 
+    /**
+     * Filters a movie to a string of names of the Writers.
+     */
     app.filter('movieWriterNames', function() {
         return function(movie) {
             var writers = [];
@@ -122,6 +136,9 @@
         };
     });
 
+    /**
+     * Filters a movie to a string of the Star cast members. Limited to the top few.
+     */
     app.filter('movieStarNames', function() {
         return function(movie) {
             var stars = [];
@@ -137,6 +154,9 @@
         };
     });
 
+    /**
+     * An attribute directive to support Angular expressions while assembling an image URL.
+     */
     app.directive('backImg', function() {
         return function(scope, element, attrs) {
             var url = attrs.backImg;
